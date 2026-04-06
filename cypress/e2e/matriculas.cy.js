@@ -1,4 +1,4 @@
-/// <reference types="cypress" />
+2026-04-06 23:52:17.273 [info] [main] Registration level: Info
 
 describe('Matriculas', () => {
   beforeEach(() => {
