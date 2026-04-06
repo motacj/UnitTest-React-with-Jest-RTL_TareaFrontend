@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+
 function Home() {
 
     const navigate = useNavigate();
@@ -23,33 +24,53 @@ function Home() {
     };
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <section
+            className="min-vh-100 d-flex align-items-center"
+            style={{ backgroundColor: "#665e5e" }}>
+            <div className="container text-center">
 
-            <h1>Mi Académica</h1>
-            <p>Sistema de Gestión de Alumnos y Cursos</p>
+                    <h1 className="mb-3 text-white">Mi Académica</h1>
+                    <p className="lead text-white mb-4">
+                        Sistema de Gestión de Alumnos y Cursos
+                    </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
-                
-                <Link to="/personas" style={buttonStyle}>
-                    Gestionar Personas
-                </Link>
-                
-                <Link to="/asignaturas" style={buttonStyle}>
-                    Listar Asignaturas
-                </Link>
-                
-                <Link to="/matriculas" style={buttonStyle}>
-                    Ver Matrículas
-                </Link>
+                    <div className="d-flex flex-column align-items-center gap-3">
 
-                <button 
-                    onClick={logout}
-                    style={{ ...buttonStyle, backgroundColor: '#dc3545' }}
-                >
-                    Cerrar sesión
-                </button>
-            </div>
-        </div>
+                        <Link
+                            to="/personas"
+                            className="btn btn-lg w-50"
+                            style={{ backgroundColor: "#a09494", color: "white" }}
+                        >
+                            Listar Alumnos
+                        </Link>
+
+                        <Link
+                            to="/asignaturas"
+                            className="btn btn-lg w-50"
+                            style={{ backgroundColor: "#a09494", color: "white" }}
+                        >
+                            Listar Asignaturas
+                        </Link>
+
+                        <Link
+                            to="/matriculas"
+                            className="btn btn-lg w-50"
+                            style={{ backgroundColor: "#a09494", color: "white" }}
+                        >
+                            Listar Matrículas
+                        </Link>
+
+                        <button
+                            onClick={logout}
+                            className="btn btn-lg w-50"
+                            style={{ backgroundColor: "#dc3545", color: "white" }}
+                        >
+                            Cerrar sesión
+                        </button>
+
+                    </div>
+                </div>
+        </section>
     );
 }
 

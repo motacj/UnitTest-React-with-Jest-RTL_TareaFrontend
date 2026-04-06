@@ -35,6 +35,7 @@ class Matriculas extends React.Component {
         this.handleStartEdit = this.handleStartEdit.bind(this);
         this.handleEditInputChange = this.handleEditInputChange.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
     }
 
     componentDidMount() {
@@ -43,16 +44,22 @@ class Matriculas extends React.Component {
 
     fetchData() {
         this.setState({ isLoading: true, error: null });
+
         getMatriculas()
             .then(data => this.setState({ matriculas: data, isLoading: false }))
             .catch(error => this.setState({ error: error.message, isLoading: false }));
     }
 
+    handleLogout() {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    }
+
     handleDelete(idAlumno, idAsignatura) {
-        if (window.confirm("¿Estás seguro de que quieres borrar esta matrícula?")) {
+        if (window.confirm("¿Borrar matrícula?")) {
             deleteMatricula(idAlumno, idAsignatura)
                 .then(() => this.fetchData())
-                .catch(error => alert(`Error al borrar: ${error.message}`));
+                .catch(error => alert(error.message));
         }
     }
 
@@ -66,8 +73,8 @@ class Matriculas extends React.Component {
         }));
     }
 
-    handleInputChange(event) {
-        const { name, value } = event.target;
+    handleInputChange(e) {
+        const { name, value } = e.target;
 
         if (name === "id_alumno" || name === "id_asignatura") {
             this.setState(prev => ({
@@ -89,16 +96,15 @@ class Matriculas extends React.Component {
         }
     }
 
-    handleInsert(event) {
-        event.preventDefault();
+    handleInsert(e) {
+        e.preventDefault();
 
         postMatricula(this.state.newMatricula)
             .then(() => {
-                alert("Matrícula insertada correctamente");
                 this.handleToggleForm();
                 this.fetchData();
             })
-            .catch(error => alert(`Error al insertar: ${error.message}`));
+            .catch(error => alert(error.message));
     }
 
     handleStartEdit(matricula) {
@@ -109,8 +115,8 @@ class Matriculas extends React.Component {
         });
     }
 
-    handleEditInputChange(event) {
-        const { value } = event.target;
+    handleEditInputChange(e) {
+        const { value } = e.target;
 
         this.setState(prev => ({
             matriculaToEdit: {
@@ -120,16 +126,15 @@ class Matriculas extends React.Component {
         }));
     }
 
-    handleUpdate(event) {
-        event.preventDefault();
+    handleUpdate(e) {
+        e.preventDefault();
 
         putMatricula(this.state.matriculaToEdit)
             .then(() => {
-                alert("Matrícula actualizada correctamente");
                 this.setState({ isEditing: false, matriculaToEdit: null });
                 this.fetchData();
             })
-            .catch(error => alert(`Error al actualizar: ${error.message}`));
+            .catch(error => alert(error.message));
     }
 
     render() {
@@ -144,171 +149,140 @@ class Matriculas extends React.Component {
             matriculaToEdit
         } = this.state;
 
-        const deleteButtonStyle = {
-            padding: '5px 10px',
-            backgroundColor: '#dc3545',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-        };
-
-        const editButtonStyle = {
-            padding: '5px 10px',
-            backgroundColor: '#ff9800',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            marginLeft: '5px'
-        };
-
-        if (error) return <div>Error: {error}</div>;
-        if (isLoading) return <div>Cargando listado de matrículas...</div>;
+        if (isLoading) return <div style={{ color: "white" }}>Cargando...</div>;
+        if (error) return <div style={{ color: "white" }}>Error: {error}</div>;
 
         return (
-            <div>
-                <h2>Lista de Matrículas</h2>
+            <section style={{ backgroundColor: "#665e5e", minHeight: "100vh" }}>
+                <div className="container py-5">
 
-                <button
-                    onClick={this.handleToggleForm}
-                    style={{
-                        padding: '10px',
-                        margin: '10px',
-                        backgroundColor: showInsertForm ? '#ffc107' : '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                    }}
-                    disabled={isEditing}
-                >
-                    {showInsertForm ? 'Cancelar' : 'Insertar Nueva Matrícula'}
-                </button>
+                    <div className="card rounded-3 text-black" style={{ backgroundColor: "#a17979" }}>
+                        <div className="card-body">
 
-                {showInsertForm && (
-                    <form
-                        onSubmit={this.handleInsert}
-                        style={{
-                            border: '1px solid #ccc',
-                            padding: '20px',
-                            margin: '20px auto',
-                            width: '300px',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                    >
-                        <h3>Insertar Matrícula</h3>
+                            <div className="text-end mb-3">
+                                <button className="btn btn-danger" onClick={this.handleLogout}>
+                                    Logout
+                                </button>
+                            </div>
 
-                        <input
-                            name="id_alumno"
-                            placeholder="ID Alumno"
-                            value={newMatricula.id.id_alumno}
-                            onChange={this.handleInputChange}
-                            required
-                        />
+                            <h2 className="text-center text-white mb-4">Lista de Matrículas</h2>
 
-                        <input
-                            name="id_asignatura"
-                            placeholder="ID Asignatura"
-                            value={newMatricula.id.id_asignatura}
-                            onChange={this.handleInputChange}
-                            required
-                        />
+                            <div className="text-center mb-3">
+                                <button
+                                    className="btn"
+                                    style={{
+                                        backgroundColor: showInsertForm ? "#ffc107" : "#28a745",
+                                        color: "white"
+                                    }}
+                                    onClick={this.handleToggleForm}
+                                    disabled={isEditing}
+                                >
+                                    {showInsertForm ? "Cancelar" : "Insertar Nueva Matrícula"}
+                                </button>
+                            </div>
 
-                        <input
-                            name="nota"
-                            type="number"
-                            step="0.1"
-                            placeholder="Nota"
-                            value={newMatricula.nota}
-                            onChange={this.handleInputChange}
-                            required
-                        />
+                            {showInsertForm && (
+                                <form onSubmit={this.handleInsert} className="mb-4 text-center">
 
-                        <button type="submit">Guardar Matrícula</button>
-                    </form>
-                )}
+                                    <input
+                                        name="id_alumno"
+                                        placeholder="ID Alumno"
+                                        className="form-control mb-2"
+                                        value={newMatricula.id.id_alumno}
+                                        onChange={this.handleInputChange}
+                                    />
 
-                {isEditing && matriculaToEdit && (
-                    <form
-                        onSubmit={this.handleUpdate}
-                        style={{
-                            border: '2px solid #ff9800',
-                            padding: '20px',
-                            margin: '20px auto',
-                            width: '300px',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                    >
-                        <h3>Editando Matrícula</h3>
+                                    <input
+                                        name="id_asignatura"
+                                        placeholder="ID Asignatura"
+                                        className="form-control mb-2"
+                                        value={newMatricula.id.id_asignatura}
+                                        onChange={this.handleInputChange}
+                                    />
 
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={matriculaToEdit.nota}
-                            onChange={this.handleEditInputChange}
-                            required
-                        />
+                                    <input
+                                        name="nota"
+                                        type="number"
+                                        step="0.1"
+                                        placeholder="Nota"
+                                        className="form-control mb-2"
+                                        value={newMatricula.nota}
+                                        onChange={this.handleInputChange}
+                                    />
 
-                        <button type="submit">Actualizar</button>
-                        <button
-                            type="button"
-                            onClick={() => this.setState({ isEditing: false, matriculaToEdit: null })}
-                        >
-                            Cancelar
-                        </button>
-                    </form>
-                )}
+                                    <button className="btn btn-primary" style={{ backgroundColor: "#a09494" }}>
+                                        Guardar
+                                    </button>
+                                </form>
+                            )}
 
-                <table
-                    border="1"
-                    style={{
-                        width: '80%',
-                        borderCollapse: 'collapse',
-                        margin: '20px auto'
-                    }}
-                >
-                    <thead>
-                        <tr style={{ backgroundColor: '#f2f2f2' }}>
-                            <th>ID Alumno</th>
-                            <th>ID Asignatura</th>
-                            <th>Nota</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {matriculas.map(m => (
-                            <tr key={`${m.id.id_alumno}-${m.id.id_asignatura}`}>
-                                <td>{m.id.id_alumno}</td>
-                                <td>{m.id.id_asignatura}</td>
-                                <td>{m.nota}</td>
-                                <td>
-                                    <button
-                                        onClick={() =>
-                                            this.handleDelete(
-                                                m.id.id_alumno,
-                                                m.id.id_asignatura
-                                            )
-                                        }
-                                        style={deleteButtonStyle}
-                                    >
-                                        Borrar
+                            {isEditing && matriculaToEdit && (
+                                <form onSubmit={this.handleUpdate} className="mb-4 text-center">
+
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        className="form-control mb-2"
+                                        value={matriculaToEdit.nota}
+                                        onChange={this.handleEditInputChange}
+                                    />
+
+                                    <button className="btn btn-warning me-2">
+                                        Actualizar
                                     </button>
 
                                     <button
-                                        onClick={() => this.handleStartEdit(m)}
-                                        style={editButtonStyle}
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => this.setState({ isEditing: false })}
                                     >
-                                        Editar
+                                        Cancelar
                                     </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                </form>
+                            )}
+
+                            <div className="table-responsive">
+                                <table className="table table-dark table-striped text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Alumno</th>
+                                            <th>ID Asignatura</th>
+                                            <th>Nota</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {matriculas.map(m => (
+                                            <tr key={`${m.id.id_alumno}-${m.id.id_asignatura}`}>
+                                                <td>{m.id.id_alumno}</td>
+                                                <td>{m.id.id_asignatura}</td>
+                                                <td>{m.nota}</td>
+                                                <td>
+                                                    <button
+                                                        className="btn btn-danger btn-sm me-2"
+                                                        onClick={() => this.handleDelete(m.id.id_alumno, m.id.id_asignatura)}
+                                                    >
+                                                        Borrar
+                                                    </button>
+
+                                                    <button
+                                                        className="btn btn-warning btn-sm"
+                                                        onClick={() => this.handleStartEdit(m)}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
         );
     }
 }

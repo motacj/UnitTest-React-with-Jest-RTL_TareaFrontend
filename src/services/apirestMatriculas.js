@@ -1,47 +1,48 @@
-// Importamos la URL base definida en utils/constans
 import { API_BASE_URL } from '../utils/constans';
 
-// ============================
-// RUTAS
-// ============================
 const RUTA_MATRICULAS = 'api/v3/matriculas';
 
-// ============================
-//   FUNCIÓN CENTRAL JWT
-// ============================
+const getToken = () => {
+    return localStorage.getItem("token");
+};
+
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("jwt");
+    const token = getToken();
+
+    if (!token) {
+        window.location.href = "/";
+        return {};
+    }
 
     return {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
+        'Authorization': `Bearer ${token}`
     };
 };
 
-// ============================
-// GET MATRICULAS
-// ============================
-export const getMatriculas = async () => {
-    const url = `${API_BASE_URL}${RUTA_MATRICULAS}`;
-    console.log(`[API Service] GET → ${url}`);
+const handleAuthError = (response) => {
+    if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+    }
+};
 
-    const response = await fetch(url, {
+export const getMatriculas = async () => {
+    const response = await fetch(`${API_BASE_URL}${RUTA_MATRICULAS}`, {
         headers: getAuthHeaders()
     });
 
     if (!response.ok) {
+        handleAuthError(response);
         throw new Error(`Error GET Matriculas: ${response.status}`);
     }
 
     return response.json();
 };
 
-// ============================
-// DELETE MATRICULA
-// ============================
 export const deleteMatricula = async (idAlumno, idAsignatura) => {
     const response = await fetch(
-        `${API_BASE_URL}api/v3/matriculas/${idAsignatura}/${idAlumno}`,
+        `${API_BASE_URL}${RUTA_MATRICULAS}/${idAsignatura}/${idAlumno}`,
         {
             method: 'DELETE',
             headers: getAuthHeaders()
@@ -49,55 +50,39 @@ export const deleteMatricula = async (idAlumno, idAsignatura) => {
     );
 
     if (!response.ok) {
-        throw new Error("Error DELETE Matricula: " + response.status);
+        handleAuthError(response);
+        throw new Error(`Error DELETE Matricula: ${response.status}`);
     }
 
     return true;
 };
 
-// ============================
-// POST MATRICULA
-// ============================
 export const postMatricula = async (matricula) => {
-    const url = `${API_BASE_URL}${RUTA_MATRICULAS}`;
-    console.log(`[API Service] POST → ${url}`);
-
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}${RUTA_MATRICULAS}`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(matricula)
     });
 
     if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error POST Matricula: ${response.status} - ${errorText}`);
+        handleAuthError(response);
+        throw new Error(`Error POST Matricula: ${response.status}`);
     }
 
     return true;
 };
 
-// ============================
-// PUT MATRICULA
-// ============================
 export const putMatricula = async (matricula) => {
-
-    const url = `${API_BASE_URL}${RUTA_MATRICULAS}`;
-    console.log(`[API Service] PUT → ${url}`);
-
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}${RUTA_MATRICULAS}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(matricula)
     });
 
     if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error PUT Matricula: ${response.status} - ${errorText}`);
+        handleAuthError(response);
+        throw new Error(`Error PUT Matricula: ${response.status}`);
     }
 
     return true;
 };
-
-
-
-
