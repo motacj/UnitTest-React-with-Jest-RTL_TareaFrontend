@@ -7,7 +7,7 @@ function Home() {
     const navigate = useNavigate();
 
     const logout = () => {
-        localStorage.removeItem("jwt");
+        localStorage.removeItem("token");
         navigate("/");
     };
 
