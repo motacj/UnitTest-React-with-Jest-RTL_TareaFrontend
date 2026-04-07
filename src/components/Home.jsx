@@ -11,17 +11,6 @@ function Home() {
         navigate("/");
     };
 
-    const buttonStyle = {
-        padding: '10px 20px',
-        margin: '10px 0',
-        width: '200px',
-        textDecoration: 'none',
-        textAlign: 'center',
-        backgroundColor: '#007bff',
-        color: 'white',
-        borderRadius: '5px',
-        display: 'block'
-    };
 
     return (
         <section

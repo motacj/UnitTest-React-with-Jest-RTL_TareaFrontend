@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import PrivateRoute from './components/PrivateRoute.jsx';
 import Home from './components/Home.jsx';
 import Personas from './components/Personas.jsx';
 import Asignaturas from './components/Asignaturas.jsx';
