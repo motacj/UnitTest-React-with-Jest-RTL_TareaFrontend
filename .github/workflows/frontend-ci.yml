@@ -1,0 +1,31 @@
+name: Frontend CI
+# En que ramas se realizaran las acciones
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+# Trabajo a realizar
+jobs:
+  # Ubuntu temporal para realziar los trabajos y pasos
+  test-and-build:
+    runs-on: ubuntu-latest
+# Pasos a realizar
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v5
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar tests
+        run: npm test -- --watchAll=false
+
+      - name: Generar build
+        run: npm run build
